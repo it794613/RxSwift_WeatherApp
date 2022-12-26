@@ -20,16 +20,19 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        self.textField.rx.value.subscribe(onNext: { city in
-            if let city = city {
-                if city.isEmpty {
-                    self.displayWeather(nil)
-                } else {
-                    self.fetchWeather(by: city)
+        
+        self.textField.rx.controlEvent(.editingDidEndOnExit).asObservable()
+            .map { self.textField.text }
+            .subscribe(onNext: { city in
+                if let city = city {
+                    if city.isEmpty {
+                        self.displayWeather(nil)
+                    } else {
+                        self.fetchWeather(by: city)
+                    }
                 }
-            }
-        }).disposed(by: disposeBag)
+            }).disposed(by: disposeBag)
+        
     }
     
     func fetchWeather(by city: String) {
